@@ -1,14 +1,22 @@
 resource "aws_s3_bucket" "ec" {
-  bucket = var.cloudfront
-  
+  bucket = var.s3name
+
   tags = {
     Name = var.tags
+  }
+}
+
+resource "aws_s3_bucket_ownership_controls" "ec" {
+  bucket = aws_s3_bucket.ec.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
   }
 }
 
 resource "aws_s3_bucket_acl" "b_acl" {
   bucket = aws_s3_bucket.ec.id
   acl    = "private"
+  depends_on = [aws_s3_bucket_ownership_controls.ec]
 }
 
 locals {
@@ -17,12 +25,18 @@ locals {
 
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
-    domain_name = aws_s3_bucket.ec.bucket_regional_domain_name
-    origin_id   = local.s3_origin_id
+    domain_name = aws_s3_bucket_website_configuration.website.website_endpoint
+    origin_id   = aws_s3_bucket_website_configuration.website.id
 
-    s3_origin_config {
-      origin_access_identity = aws_cloudfront_origin_access_identity.default.cloudfront_access_identity_path
-    }
+    custom_origin_config {
+        origin_protocol_policy = "http-only"
+        http_port = 80
+        https_port = 443
+        origin_ssl_protocols = ["TLSv1.2", "TLSv1.1", "TLSv1"]
+      }
+    # s3_origin_config {
+    #   origin_access_identity = aws_cloudfront_origin_access_identity.default.cloudfront_access_identity_path
+    # }
   }
 
   enabled             = true
@@ -30,18 +44,18 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   comment             = "Config do Portal Exemplo"
   default_root_object = "index.html"
 
-  logging_config {
-    include_cookies = false
-    bucket          = aws_s3_bucket.ec.id
-    prefix          = "myprefix"
-  }
+  # logging_config {
+  #   include_cookies = false
+  #   bucket          = aws_s3_bucket.ec.id
+  #   prefix          = "myprefix"
+  # }
 
   aliases = []
 
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = local.s3_origin_id
+    target_origin_id = aws_s3_bucket.ec.id
 
     forwarded_values {
       query_string = false
@@ -62,7 +76,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     path_pattern     = "/content/immutable/*"
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = local.s3_origin_id
+    target_origin_id = aws_s3_bucket.ec.id
 
     forwarded_values {
       query_string = false
@@ -85,8 +99,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     path_pattern     = "/content/*"
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = local.s3_origin_id
-
+    target_origin_id = aws_s3_bucket.ec.id
     forwarded_values {
       query_string = false
 
