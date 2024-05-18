@@ -1,22 +1,4 @@
-variable "s3name" {
-  type    = string
-  default = "robsonross"
-}
 
-variable "cloudfront" {
-  type    = string
-  default = "robsonross.com.br"
-}
-
-variable "tags" {
-  type    = string
-  default = "robsonross"
-}
-
-variable "origin" {
-  type    = string
-  default = "Origin"
-}
 
 variable "region" {
   type    = string
@@ -24,12 +6,33 @@ variable "region" {
 }
 
 # Essas variaveis tem finalidade apenas para teste
-variable "AWS_ACCES_KEY_ID" {
-  type    = string
-  default = "AKIA5X5I25IFKI47JUTT"
+# variable "AWS_ACCES_KEY_ID" {
+#   type    = string
+#   default = ""
+# }
+
+# variable "AWS_SECRET_ACCESS_KEY" {
+#   type    = string
+#   default = ""
+# }
+
+variable "s3name" {
+  description = "Nome Dados ao S3 Bucket"
 }
 
-variable "AWS_SECRET_ACCESS_KEY" {
-  type    = string
-  default = "MQGnL0KLw8BZLpqSollT5wjoerz/cEJNBgqkyQ3H"
+variable "tags" {
+  description = "Tags Dadas ao Bucket"
+}
+
+variable "cloudfront" {
+  description = "No do cloudfront atribuido ao bucket"
+}
+
+variable "s3_content" {
+  description = "The default content of the s3 bucket upon creation of the bucket"
+  type        = set(string)
+}
+
+variable "origin" {
+  description = "Nome da Origin para associacao no cloudfront"
 }
