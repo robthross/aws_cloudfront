@@ -39,145 +39,36 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     max_ttl                = 86400
   }
 
-    # Cache behavior with precedence 0
-  ordered_cache_behavior {
-    path_pattern     = "/meus-dados/*"
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = var.bucket_ec
-
-    function_association {
-      event_type   = "viewer-request"
-      function_arn = aws_cloudfront_function.test.arn
-    }
-
-    forwarded_values {
-      query_string = false
-      headers      = ["Origin"]
-
-      cookies {
-        forward = "none"
-      }
-    }
-
-    min_ttl                = 0
-    default_ttl            = 86400
-    max_ttl                = 31536000
-    compress               = true
-    viewer_protocol_policy = "redirect-to-https"
-  }
-
   # Cache behavior with precedence 0
-  ordered_cache_behavior {
-    path_pattern     = "/painel/*"
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = var.bucket_ec
+  dynamic "ordered_cache_behavior" {
+    for_each = var.ordered_cache_behavior
+    content {
+      path_pattern     = ordered_cache_behavior.value.path_pattern
+      allowed_methods  = ordered_cache_behavior.value.allowed_methods
+      cached_methods   = ordered_cache_behavior.value.cached_methods
+      target_origin_id = var.bucket_ec
 
-    function_association {
-      event_type   = "viewer-request"
-      function_arn = aws_cloudfront_function.test.arn
-    }
-
-    forwarded_values {
-      query_string = false
-      headers      = ["Origin"]
-
-      cookies {
-        forward = "none"
+      function_association {
+        event_type   = "viewer-request"
+        function_arn = aws_cloudfront_function.test.arn
       }
-    }
 
-    min_ttl                = 0
-    default_ttl            = 86400
-    max_ttl                = 31536000
-    compress               = true
-    viewer_protocol_policy = "redirect-to-https"
-  }
+      forwarded_values {
+        query_string = false
+        headers      = ["Origin"]
 
-    # Cache behavior with precedence 0
-  ordered_cache_behavior {
-    path_pattern     = "/cadastro/*"
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = var.bucket_ec
-
-    function_association {
-      event_type   = "viewer-request"
-      function_arn = aws_cloudfront_function.test.arn
-    }
-
-    forwarded_values {
-      query_string = false
-      headers      = ["Origin"]
-
-      cookies {
-        forward = "none"
+        cookies {
+          forward = "none"
+        }
       }
-    }
 
-    min_ttl                = 0
-    default_ttl            = 86400
-    max_ttl                = 31536000
-    compress               = true
-    viewer_protocol_policy = "redirect-to-https"
+      min_ttl                = 0
+      default_ttl            = 86400
+      max_ttl                = 31536000
+      compress               = true
+      viewer_protocol_policy = ordered_cache_behavior.value.viewer_protocol_policy
+    }
   }
-
-    # Cache behavior with precedence 0
-  ordered_cache_behavior {
-    path_pattern     = "/financeiro/*"
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = var.bucket_ec
-
-    function_association {
-      event_type   = "viewer-request"
-      function_arn = aws_cloudfront_function.test.arn
-    }
-
-    forwarded_values {
-      query_string = false
-      headers      = ["Origin"]
-
-      cookies {
-        forward = "none"
-      }
-    }
-
-    min_ttl                = 0
-    default_ttl            = 86400
-    max_ttl                = 31536000
-    compress               = true
-    viewer_protocol_policy = "redirect-to-https"
-  }
-
-  # Cache behavior with precedence 1
-  ordered_cache_behavior {
-    path_pattern     = "/associacao/*"
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = var.bucket_ec
-
-    function_association {
-      event_type   = "viewer-request"
-      function_arn = aws_cloudfront_function.test.arn
-    }
-
-    forwarded_values {
-      query_string = false
-
-      cookies {
-        forward = "none"
-      }
-    }
-
-    min_ttl                = 0
-    default_ttl            = 3600
-    max_ttl                = 86400
-    compress               = true
-    viewer_protocol_policy = "redirect-to-https"
-  }
-
   price_class = "PriceClass_200"
 
   restrictions {

@@ -36,3 +36,28 @@ variable "s3_content" {
 variable "origin" {
   description = "Nome da Origin para associacao no cloudfront"
 }
+
+variable "ordered_cache_behavior" {
+  type = map(object({
+    path_pattern           = string
+    allowed_methods        = list(string)
+    cached_methods         = list(string)
+    viewer_protocol_policy = string
+  }))
+  description = "Map of ordered cache behaviors."
+
+  default = {
+    "ordered_cache_behavior_1" = {
+      allowed_methods        = ["GET", "HEAD", "OPTIONS"]
+      cached_methods         = ["GET", "HEAD"]
+      path_pattern           = "/painel/*"
+      viewer_protocol_policy = "redirect-to-https"
+    }
+    "ordered_cache_behavior_2" = {
+      allowed_methods        = ["GET", "HEAD", "OPTIONS"]
+      cached_methods         = ["GET", "HEAD"]
+      path_pattern           = "/associacao/*"
+      viewer_protocol_policy = "redirect-to-https"
+    }
+  }
+}

@@ -29,9 +29,10 @@ module "bucket" {
 }
 
 module "cloudfront" {
-  source           = "./module/cloudfront"
-  website_endpoint = module.bucket.website_configuration
-  website_id       = module.bucket.website_id
-  bucket_ec        = module.bucket.bucket_ec
-  origin           = var.origin
+  source                 = "./module/cloudfront"
+  website_endpoint       = module.bucket.website_configuration
+  website_id             = module.bucket.website_id
+  bucket_ec              = module.bucket.bucket_ec
+  origin                 = var.origin
+  ordered_cache_behavior = var.ordered_cache_behavior
 }
