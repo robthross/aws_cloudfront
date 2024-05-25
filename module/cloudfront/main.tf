@@ -41,11 +41,11 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   # Cache behavior with precedence 0
   dynamic "ordered_cache_behavior" {
-    for_each = var.ordered_cache_behavior
+    for_each = var.path_pattern
     content {
-      path_pattern     = ordered_cache_behavior.value.path_pattern
-      allowed_methods  = ordered_cache_behavior.value.allowed_methods
-      cached_methods   = ordered_cache_behavior.value.cached_methods
+      path_pattern     = ordered_cache_behavior.value
+      allowed_methods  = var.allowed_methods
+      cached_methods   = var.cached_methods
       target_origin_id = var.bucket_ec
 
       function_association {
@@ -66,7 +66,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
       default_ttl            = 86400
       max_ttl                = 31536000
       compress               = true
-      viewer_protocol_policy = ordered_cache_behavior.value.viewer_protocol_policy
+      viewer_protocol_policy = "allow-all"
     }
   }
   price_class = "PriceClass_200"

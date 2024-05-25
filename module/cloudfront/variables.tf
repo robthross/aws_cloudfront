@@ -21,21 +21,16 @@ variable "bucket_ec" {
 #   description = "The default content of the s3 bucket upon creation of the bucket"
 # }
 
-variable "ordered_cache_behavior" {
-  type = map(object({
-    path_pattern           = string
-    allowed_methods        = list(string)
-    cached_methods         = list(string)
-    viewer_protocol_policy = string
-  }))
+variable "path_pattern" {
+  type        = list(string)
   description = "Map of ordered cache behaviors."
+  # default = [ "associacao", "painel", "cadastro", "meus-dados", "vr-pague", "financeiro" ]
+}
 
-  default = {
-    "ordered_cache_behavior_1" = {
-      allowed_methods        = []
-      cached_methods         = []
-      path_pattern           = ""
-      viewer_protocol_policy = ""
-    }
-  }
+variable "allowed_methods" {
+  description = "Valores dos metodos permitidos"
+}
+
+variable "cached_methods" {
+  description = "Valores de cache permitido"
 }
