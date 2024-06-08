@@ -18,7 +18,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   comment             = "Config do Portal"
   default_root_object = "index.html"
 
-  aliases = []
+  for_each = var.domain-aliases
+  aliases = [each.value]
 
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
@@ -98,7 +99,5 @@ resource "aws_cloudfront_function" "test" {
   code    = file("${path.module}/function.js")
 }
 
-output "cloudfront_domain_name" {
-  value = aws_cloudfront_distribution.s3_distribution.domain_name
-}
+
 

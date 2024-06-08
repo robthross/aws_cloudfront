@@ -50,3 +50,9 @@ variable "allowed_methods" {
 variable "cached_methods" {
   description = "Valores de cache permitido"
 }
+
+variable "domain-aliases" {
+  type        = map(string)
+  default = {}
+  description = "Domínios alterainativos a serem adicionados"
+}

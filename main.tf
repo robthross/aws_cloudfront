@@ -37,4 +37,5 @@ module "cloudfront" {
   path_pattern     = var.path_pattern
   allowed_methods  = var.allowed_methods
   cached_methods   = var.cached_methods
+  domain-aliases   = var.domain-aliases
 }
